@@ -4274,13 +4274,11 @@ public abstract class AbstractRomHandler implements RomHandler {
         }
         if((settings.getCurrentMiscTweaks() & MiscTweak.WEAKEN_LAB.getValue()) > 0){
             for(Pokemon p : getPokemonInclFormes()){
-                if(p != null && (p.bstForPowerLevels() >= 600 || p.isLegendary())){
+                if(p != null && (isPseudo(p) || p.isLegendary())){
                     banned.add(p);
-                    System.out.println(p.name);
                 }
             }
         }
-        System.out.println("--");
         for (int i = 0; i < starterCount; i++) {
             Pokemon pkmn = allowAltFormes ? randomPokemonInclFormes() : randomPokemon();
             while (pickedStarters.contains(pkmn) || banned.contains(pkmn) || pkmn.actuallyCosmetic) {
