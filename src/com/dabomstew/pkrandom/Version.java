@@ -29,7 +29,7 @@ import java.util.Map;
 
 public class Version {
     public static final int VERSION = 321; // Increment by 1 for new version. Updated for 4.6.0-dev.
-    public static final String VERSION_STRING = "4.6.0-dev";
+    public static final String VERSION_STRING = "IM-2.0";
 
     public static final Map<Integer,String> oldVersions = setupVersionsMap();
 
@@ -69,7 +69,7 @@ public class Version {
     }
 
     public static boolean isReleaseVersionNewer(String releaseVersion) {
-        if (VERSION_STRING.contains("dev")) {
+        if (VERSION_STRING.contains("dev") || VERSION_STRING.contains("IM")) {
             return false;
         }
         // Chop off leading "v" from release version
