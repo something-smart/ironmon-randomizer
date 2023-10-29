@@ -1,3 +1,11 @@
+Version 2.1
+
+Added tweaks:
+- Randomize Type Chart: randomizes the type chart. The same number of each interaction (super effective, not very effective, immune) will be present, just arranged differently.
+
+Changed tweaks:
+- Revert Bad Berries has had its hovertext changed to be more clear.
+
 Version 2.0
 
 Updated the repo to include the source code, per the license.
