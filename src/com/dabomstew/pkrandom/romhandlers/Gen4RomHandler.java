@@ -5305,6 +5305,7 @@ public class Gen4RomHandler extends AbstractDSRomHandler {
         long available = MiscTweak.LOWER_CASE_POKEMON_NAMES.getValue();
         available |= MiscTweak.RANDOMIZE_CATCHING_TUTORIAL.getValue();
         available |= MiscTweak.UPDATE_TYPE_EFFECTIVENESS.getValue();
+        available |= MiscTweak.RANDOMIZE_TYPE_CHART.getValue();
         if (romEntry.tweakFiles.get("FastestTextTweak") != null) {
             available |= MiscTweak.FASTEST_TEXT.getValue();
         }
@@ -5356,6 +5357,8 @@ public class Gen4RomHandler extends AbstractDSRomHandler {
             patchFasterBars();
         } else if (tweak == MiscTweak.UPDATE_TYPE_EFFECTIVENESS) {
             updateTypeEffectiveness();
+        } else if (tweak == MiscTweak.RANDOMIZE_TYPE_CHART) {
+            randomizeTypeEffectiveness();
         } else if (tweak == MiscTweak.FAST_DISTORTION_WORLD) {
             applyFastDistortionWorld();
         } else if (tweak == MiscTweak.UPDATE_ROTOM_FORME_TYPING) {
@@ -5497,6 +5500,7 @@ public class Gen4RomHandler extends AbstractDSRomHandler {
                 List<TypeRelationship> typeEffectivenessTable = readTypeEffectivenessTable(battleOverlay, typeEffectivenessTableOffset);
                 log("--Updating Type Effectiveness--");
                 for (TypeRelationship relationship : typeEffectivenessTable) {
+
                     // Change Ghost 0.5x against Steel to Ghost 1x to Steel
                     if (relationship.attacker == Type.GHOST && relationship.defender == Type.STEEL) {
                         relationship.effectiveness = Effectiveness.NEUTRAL;
@@ -5519,6 +5523,43 @@ public class Gen4RomHandler extends AbstractDSRomHandler {
         }
     }
 
+    private void randomizeTypeEffectiveness(){
+        try {
+            byte[] battleOverlay = readOverlay(romEntry.getInt("BattleOvlNumber"));
+            int typeEffectivenessTableOffset = find(battleOverlay, Gen4Constants.typeEffectivenessTableLocator);
+            if (typeEffectivenessTableOffset > 0) {
+                List<TypeRelationship> typeEffectivenessTable = readTypeEffectivenessTable(battleOverlay, typeEffectivenessTableOffset);
+                log("--Randomizing Type Effectiveness--");
+                List<TypeRelationship> newRelationships = new ArrayList<>();
+                for (TypeRelationship relationship : typeEffectivenessTable) {
+                    boolean valid = false;
+                    while(!valid){
+                        Type newAttacker = Type.GEN2THROUGH5.get(random.nextInt(Type.GEN2THROUGH5.size()));
+                        Type newDefender = Type.GEN2THROUGH5.get(random.nextInt(Type.GEN2THROUGH5.size()));
+                        valid = true;
+                        for(TypeRelationship compare : newRelationships){
+                            if(compare.attacker == newAttacker && compare.defender == newDefender){
+                                valid = false;
+                            }
+                        }
+                        if(valid){
+                            relationship.attacker = newAttacker;
+                            relationship.defender = newDefender;
+                            newRelationships.add(relationship);
+                            log(newAttacker.name() + " is now " + relationship.effectiveness.name() + " on " + newDefender.name());
+                        }
+                    }
+                }
+                logBlankLine();
+                writeTypeEffectivenessTable(typeEffectivenessTable, battleOverlay, typeEffectivenessTableOffset);
+                writeOverlay(romEntry.getInt("BattleOvlNumber"), battleOverlay);
+                effectivenessUpdated = true;
+            }
+        } catch (IOException e) {
+            throw new RandomizerIOException(e);
+        }
+    }
+
     private List<TypeRelationship> readTypeEffectivenessTable(byte[] battleOverlay, int typeEffectivenessTableOffset) {
         List<TypeRelationship> typeEffectivenessTable = new ArrayList<>();
         int currentOffset = typeEffectivenessTableOffset;
@@ -5526,29 +5567,31 @@ public class Gen4RomHandler extends AbstractDSRomHandler {
         // 0xFE marks the end of the table *not* affected by Foresight, while 0xFF marks
         // the actual end of the table. Since we don't care about Ghost immunities at all,
         // just stop once we reach the Foresight section.
-        while (attackingType != (byte) 0xFE) {
-            int defendingType = battleOverlay[currentOffset + 1];
-            int effectivenessInternal = battleOverlay[currentOffset + 2];
-            Type attacking = Gen4Constants.typeTable[attackingType];
-            Type defending = Gen4Constants.typeTable[defendingType];
-            Effectiveness effectiveness = null;
-            switch (effectivenessInternal) {
-                case 20:
-                    effectiveness = Effectiveness.DOUBLE;
-                    break;
-                case 10:
-                    effectiveness = Effectiveness.NEUTRAL;
-                    break;
-                case 5:
-                    effectiveness = Effectiveness.HALF;
-                    break;
-                case 0:
-                    effectiveness = Effectiveness.ZERO;
-                    break;
-            }
-            if (effectiveness != null) {
-                TypeRelationship relationship = new TypeRelationship(attacking, defending, effectiveness);
-                typeEffectivenessTable.add(relationship);
+        while (attackingType != (byte) 0xFF) {
+            if (attackingType != (byte) 0xFE) {
+                int defendingType = battleOverlay[currentOffset + 1];
+                int effectivenessInternal = battleOverlay[currentOffset + 2];
+                Type attacking = Gen4Constants.typeTable[attackingType];
+                Type defending = Gen4Constants.typeTable[defendingType];
+                Effectiveness effectiveness = null;
+                switch (effectivenessInternal) {
+                    case 20:
+                        effectiveness = Effectiveness.DOUBLE;
+                        break;
+                    case 10:
+                        effectiveness = Effectiveness.NEUTRAL;
+                        break;
+                    case 5:
+                        effectiveness = Effectiveness.HALF;
+                        break;
+                    case 0:
+                        effectiveness = Effectiveness.ZERO;
+                        break;
+                }
+                if (effectiveness != null) {
+                    TypeRelationship relationship = new TypeRelationship(attacking, defending, effectiveness);
+                    typeEffectivenessTable.add(relationship);
+                }
             }
             currentOffset += 3;
             attackingType = battleOverlay[currentOffset];

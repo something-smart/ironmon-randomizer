@@ -3750,7 +3750,7 @@
                       <toolTipText resource-bundle="com/dabomstew/pkrandom/newgui/Bundle" key="CodeTweaks.rebalanceEncounters.toolTipText"/>
                     </properties>
                   </component>
-                  <component id="94e11" class="javax.swing.JCheckBox" binding="miscStonerParadiseCheckBox">
+                  <component id="94e11" class="javax.swing.JCheckBox" binding="miscRandomizeTypeChartCheckBox">
                     <constraints>
                       <grid row="9" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                       <gridbag weightx="0.0" weighty="0.0"/>
@@ -3758,8 +3758,8 @@
                     <properties>
                       <enabled value="false"/>
                       <selected value="false"/>
-                      <text resource-bundle="com/dabomstew/pkrandom/newgui/Bundle" key="CodeTweaks.stonerParadise.name"/>
-                      <toolTipText resource-bundle="com/dabomstew/pkrandom/newgui/Bundle" key="CodeTweaks.stonerParadise.toolTipText"/>
+                      <text resource-bundle="com/dabomstew/pkrandom/newgui/Bundle" key="CodeTweaks.randomizeTypeChart.name"/>
+                      <toolTipText resource-bundle="com/dabomstew/pkrandom/newgui/Bundle" key="CodeTweaks.randomizeTypeChart.toolTipText"/>
                     </properties>
                   </component>
                 </children>

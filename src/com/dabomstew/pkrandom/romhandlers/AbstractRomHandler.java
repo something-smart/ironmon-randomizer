@@ -4282,7 +4282,7 @@ public abstract class AbstractRomHandler implements RomHandler {
         for (int i = 0; i < starterCount; i++) {
             Pokemon pkmn = allowAltFormes ? randomPokemonInclFormes() : randomPokemon();
             while (pickedStarters.contains(pkmn) || banned.contains(pkmn) || pkmn.actuallyCosmetic) {
-                System.out.println(pkmn.name);
+                System.out.println("Prevented banned: " + pkmn.name);
                 pkmn = allowAltFormes ? randomPokemonInclFormes() : randomPokemon();
             }
             pickedStarters.add(pkmn);
@@ -5532,7 +5532,6 @@ public abstract class AbstractRomHandler implements RomHandler {
         List<Integer> currentTMs = this.getCurrentFieldTMs();
         List<Integer> requiredTMs = this.getRequiredFieldTMs();
         List<Integer> uniqueNoSellItems = this.getUniqueNoSellItems();
-        // System.out.println("distributeItemsControl: "+ distributeItemsControl);
 
         int fieldItemCount = currentItems.size();
         int fieldTMCount = currentTMs.size();
@@ -6032,9 +6031,6 @@ public abstract class AbstractRomHandler implements RomHandler {
             if (!hadError) {
                 for (Pokemon pk: actuallyCosmeticPokemonPool) {
                     pk.copyBaseFormeEvolutions(pk.baseForme);
-                }
-                if((settings.getCurrentMiscTweaks() & MiscTweak.STONER_PARADISE.getValue()) > 0){
-                    stonerParadise();
                 }
                 return;
             } else {

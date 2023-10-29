@@ -311,7 +311,7 @@ public class NewRandomizerGUI {
     private JCheckBox miscDoublePercentCheckBox;
     private JCheckBox miscBanUnownFromWildCheckBox;
     private JCheckBox miscRebalanceEncountersCheckBox;
-    private JCheckBox miscStonerParadiseCheckBox;
+    private JCheckBox miscRandomizeTypeChartCheckBox;
 
     private static JFrame frame;
 
