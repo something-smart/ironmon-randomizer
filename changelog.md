@@ -1,3 +1,8 @@
+Version 2.2
+
+Added tweaks:
+- Enable Strength Scaling: Adds a variety of features to decrease power level early on. Starters and wild pokemon under level 40 are always unevolved pokemon that can evolve by level, trainers will never have fully evolved pokemon before the "Force Fully Evolved" level (or 30 if there is none), trainers will not have <350 BST pokemon at level 20 or higher, and trainers will not have legendaries below level 40.
+
 Version 2.1
 
 Added tweaks:
