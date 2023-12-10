@@ -75,8 +75,7 @@ public class MiscTweak implements Comparable<MiscTweak> {
     public static final MiscTweak BAN_UNOWN_FROM_WILD = new MiscTweak((long)1 << 32, "banUnownFromWild", 0);
     public static final MiscTweak REBALANCE_ENCOUNTERS = new MiscTweak((long)1 << 33, "rebalanceEncounters", 0);
     public static final MiscTweak RANDOMIZE_TYPE_CHART = new MiscTweak((long) 1 << 34, "randomizeTypeChart", 0);
-    // public static final MiscTweak RANDOMIZE_TYPE_CHART = new MiscTweak((long) 1 << 35, "randomizeTypeChart", 0);
-    // public static final MiscTweak CLEAN_UP_ENCOUNTERS = new MiscTweak((long) 1 << 36, "cleanUpEncounters", 0);
+    public static final MiscTweak STRENGTH_SCALING = new MiscTweak((long) 1 << 35, "strengthScaling", 0);
 
 
     private final long value;

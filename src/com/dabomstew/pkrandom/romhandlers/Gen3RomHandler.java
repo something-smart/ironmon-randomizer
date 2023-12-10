@@ -4202,6 +4202,7 @@ public class Gen3RomHandler extends AbstractGBRomHandler {
         available |= MiscTweak.DOUBLE_PERCENT.getValue();
         available |= MiscTweak.FIELD_TMS_100.getValue();
         available |= MiscTweak.REBALANCE_ENCOUNTERS.getValue();
+        available |= MiscTweak.STRENGTH_SCALING.getValue();
         return available;
     }
 

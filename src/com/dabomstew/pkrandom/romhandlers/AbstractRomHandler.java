@@ -63,6 +63,10 @@ public abstract class AbstractRomHandler implements RomHandler {
 
     boolean CHAOS = false;
 
+    private List<Pokemon> vanillaEvolvedPokemon;
+    private List<Pokemon> vanillaNonBaseLevelEvos;
+    private List<Pokemon> under350Mons;
+
     /* Constructor */
 
     public AbstractRomHandler(Random random, PrintStream logStream) {
@@ -957,6 +961,10 @@ public abstract class AbstractRomHandler implements RomHandler {
         boolean banIrregularAltFormes = settings.isBanIrregularAltFormes();
         boolean abilitiesAreRandomized = settings.getAbilitiesMod() == Settings.AbilitiesMod.RANDOMIZE;
 
+        if(vanillaNonBaseLevelEvos == null){
+            populateVanillaEvoInfo();
+        }
+
         checkPokemonRestrictions();
         List<Pokemon> banned = this.bannedForWildEncounters();
         banned.addAll(this.getBannedFormesForPlayerPokemon());
@@ -970,7 +978,6 @@ public abstract class AbstractRomHandler implements RomHandler {
         if (banIrregularAltFormes) {
             banned.addAll(getIrregularFormes());
         }
-
         // New: randomize the order encounter sets are randomized in.
         // Leads to less predictable results for various modifiers.
         // Need to keep the original ordering around for saving though.
@@ -1182,14 +1189,28 @@ public abstract class AbstractRomHandler implements RomHandler {
         } else {
             // Entirely random
             for (EncounterSet area : scrambledEncounters) {
+                int minLevelInArea = 100;
+                for(Encounter e : area.encounters){
+                    if(e.level < minLevelInArea){
+                        minLevelInArea = e.level;
+                    }
+                }
                 // Poke-set
                 Set<Pokemon> inArea = pokemonInArea(area);
                 // Build area map using randoms
                 Map<Pokemon, Pokemon> areaMap = new TreeMap<>();
+                List<Pokemon> tempBanned = banned;
+                if((settings.getCurrentMiscTweaks() & MiscTweak.STRENGTH_SCALING.getValue()) > 0) {
+                    if(minLevelInArea < 40){
+                        tempBanned = new ArrayList<>();
+                        tempBanned.addAll(banned);
+                        tempBanned.addAll(vanillaNonBaseLevelEvos);
+                    }
+                }
                 for (Pokemon areaPk : inArea) {
-                    Pokemon picked = pickEntirelyRandomPokemon(allowAltFormes, noLegendaries, area, banned);
+                    Pokemon picked = pickEntirelyRandomPokemon(allowAltFormes, noLegendaries, area, tempBanned);
                     while (areaMap.containsValue(picked)) {
-                        picked = pickEntirelyRandomPokemon(allowAltFormes, noLegendaries, area, banned);
+                        picked = pickEntirelyRandomPokemon(allowAltFormes, noLegendaries, area, tempBanned);
                     }
                     areaMap.put(areaPk, picked);
                 }
@@ -1802,6 +1823,10 @@ public abstract class AbstractRomHandler implements RomHandler {
 
         checkPokemonRestrictions();
 
+        if(vanillaEvolvedPokemon == null){
+            populateVanillaEvoInfo();
+        }
+
         if((settings.getCurrentMiscTweaks() & MiscTweak.MYTHICAL_EXP.getValue()) > 0){
             int[] affectedMythicals = {Species.mew, Species.celebi, Species.shaymin};
             for(Pokemon p : getPokemonInclFormes()){
@@ -1945,6 +1970,13 @@ public abstract class AbstractRomHandler implements RomHandler {
             }
         }
 
+        List<Pokemon> legendaries = new ArrayList<>();
+        for(Pokemon p : getPokemonInclFormes()){
+            if(p != null && p.isLegendary()){
+                legendaries.add(p);
+            }
+        }
+
         List<Integer> mainPlaythroughTrainers = getMainPlaythroughTrainers();
 
         // Randomize Trainer Pokemon
@@ -2005,6 +2037,7 @@ public abstract class AbstractRomHandler implements RomHandler {
                 boolean eliteFourSetUniquePokemon =
                         eliteFourTrackPokemon && eliteFourUniquePokemonNumber > trainerPokemonList.indexOf(tp);
                 boolean willForceEvolve = forceFullyEvolved && tp.level >= forceFullyEvolvedLevel;
+                int forceUnevolvedLevel = forceFullyEvolved ? forceFullyEvolvedLevel : 30;
 
                 Pokemon oldPK = tp.pokemon;
                 if (tp.forme > 0) {
@@ -2022,12 +2055,25 @@ public abstract class AbstractRomHandler implements RomHandler {
                 if (willForceEvolve) {
                     bannedList.addAll(evolvesIntoTheWrongType);
                 }
+                boolean tempNoLegendaries = noLegendaries;
+                if((settings.getCurrentMiscTweaks() & MiscTweak.STRENGTH_SCALING.getValue()) > 0) {
+                    if(tp.level < forceUnevolvedLevel) {
+                        bannedList.addAll(vanillaEvolvedPokemon);
+                    }
+                    if(tp.level < 40){
+                        tempNoLegendaries = true;
+                        bannedList.addAll(legendaries);
+                    }
+                    if(tp.level >= 20){
+                        bannedList.addAll(under350Mons);
+                    }
+                }
 
                 Pokemon newPK = pickTrainerPokeReplacement(
                                 oldPK,
                                 usePowerLevels,
                                 typeForTrainer,
-                                noLegendaries,
+                                tempNoLegendaries,
                                 wgAllowed,
                                 distributionSetting || (mainPlaythroughSetting && mainPlaythroughTrainers.contains(t.index)),
                                 swapThisMegaEvo,
@@ -4262,6 +4308,10 @@ public abstract class AbstractRomHandler implements RomHandler {
         boolean allowAltFormes = settings.isAllowStarterAltFormes();
         boolean banIrregularAltFormes = settings.isBanIrregularAltFormes();
 
+        if(vanillaNonBaseLevelEvos == null){
+            populateVanillaEvoInfo();
+        }
+
         int starterCount = starterCount();
         pickedStarters = new ArrayList<>();
         List<Pokemon> banned = getBannedFormesForPlayerPokemon();
@@ -4279,10 +4329,13 @@ public abstract class AbstractRomHandler implements RomHandler {
                 }
             }
         }
+        if((settings.getCurrentMiscTweaks() & MiscTweak.STRENGTH_SCALING.getValue()) > 0){
+            banned.addAll(vanillaNonBaseLevelEvos);
+        }
         for (int i = 0; i < starterCount; i++) {
             Pokemon pkmn = allowAltFormes ? randomPokemonInclFormes() : randomPokemon();
             while (pickedStarters.contains(pkmn) || banned.contains(pkmn) || pkmn.actuallyCosmetic) {
-                System.out.println("Prevented banned: " + pkmn.name);
+                // System.out.println("Prevented banned: " + pkmn.name);
                 pkmn = allowAltFormes ? randomPokemonInclFormes() : randomPokemon();
             }
             pickedStarters.add(pkmn);
@@ -4296,6 +4349,10 @@ public abstract class AbstractRomHandler implements RomHandler {
         boolean allowAltFormes = settings.isAllowStarterAltFormes();
         boolean banIrregularAltFormes = settings.isBanIrregularAltFormes();
 
+        if(vanillaNonBaseLevelEvos == null){
+            populateVanillaEvoInfo();
+        }
+
         int starterCount = starterCount();
         pickedStarters = new ArrayList<>();
         List<Pokemon> banned = getBannedFormesForPlayerPokemon();
@@ -4305,6 +4362,9 @@ public abstract class AbstractRomHandler implements RomHandler {
         }
         if (banIrregularAltFormes) {
             banned.addAll(getIrregularFormes());
+        }
+        if((settings.getCurrentMiscTweaks() & MiscTweak.STRENGTH_SCALING.getValue()) > 0){
+            banned.addAll(vanillaNonBaseLevelEvos);
         }
         for (int i = 0; i < starterCount; i++) {
             Pokemon pkmn = random2EvosPokemon(allowAltFormes);
@@ -5793,6 +5853,36 @@ public abstract class AbstractRomHandler implements RomHandler {
         }
     }
 
+    public void populateVanillaEvoInfo(){
+        vanillaEvolvedPokemon = new ArrayList<>();
+        vanillaNonBaseLevelEvos = new ArrayList<>();
+        under350Mons = new ArrayList<>();
+        for(Pokemon p : getPokemon()){
+            if(p != null){
+                if(p.bstForPowerLevels() < 350){
+                    under350Mons.add(p);
+                }
+                boolean baseLevelEvo = false;
+                if(p.evolutionsFrom.size() > 0){
+                    if(p.evolutionsTo.size() == 0){
+                        for(Evolution e : p.evolutionsFrom){
+                            if(e.type == EvolutionType.LEVEL){
+                                baseLevelEvo = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+                else{
+                    vanillaEvolvedPokemon.add(p);
+                }
+                if(!baseLevelEvo){
+                    vanillaNonBaseLevelEvos.add(p);
+                }
+            }
+        }
+    }
+
     @Override
     public void randomizeEvolutions(Settings settings) {
         boolean similarStrength = settings.isEvosSimilarStrength();
@@ -5802,6 +5892,8 @@ public abstract class AbstractRomHandler implements RomHandler {
         boolean allowAltFormes = settings.isEvosAllowAltFormes();
         boolean banIrregularAltFormes = settings.isBanIrregularAltFormes();
         boolean abilitiesAreRandomized = settings.getAbilitiesMod() == Settings.AbilitiesMod.RANDOMIZE;
+
+        populateVanillaEvoInfo();
 
         increaseBaseFriendship(settings);
 

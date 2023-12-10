@@ -5334,6 +5334,7 @@ public class Gen4RomHandler extends AbstractDSRomHandler {
         if (romEntry.romType == Gen4Constants.Type_HGSS){
             available |= MiscTweak.BAN_UNOWN_FROM_WILD.getValue();
         }
+        available |= MiscTweak.STRENGTH_SCALING.getValue();
 
         return available;
     }
