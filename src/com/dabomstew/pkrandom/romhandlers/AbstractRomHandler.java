@@ -2064,7 +2064,7 @@ public abstract class AbstractRomHandler implements RomHandler {
                         tempNoLegendaries = true;
                         bannedList.addAll(legendaries);
                     }
-                    if(tp.level >= 20){
+                    if(tp.level >= 20 && !(forceFullyEvolved && tp.level >= forceFullyEvolvedLevel)){
                         bannedList.addAll(under350Mons);
                     }
                 }
@@ -4366,6 +4366,7 @@ public abstract class AbstractRomHandler implements RomHandler {
         if((settings.getCurrentMiscTweaks() & MiscTweak.STRENGTH_SCALING.getValue()) > 0){
             banned.addAll(vanillaNonBaseLevelEvos);
         }
+        System.out.println(banned);
         for (int i = 0; i < starterCount; i++) {
             Pokemon pkmn = random2EvosPokemon(allowAltFormes);
             while (pickedStarters.contains(pkmn) || banned.contains(pkmn)) {

@@ -2397,6 +2397,7 @@ public class Gen7RomHandler extends Abstract3DSRomHandler {
         available |= MiscTweak.BAN_LUCKY_EGG.getValue();
         available |= MiscTweak.SOS_BATTLES_FOR_ALL.getValue();
         available |= MiscTweak.RETAIN_ALT_FORMES.getValue();
+        available |= MiscTweak.STRENGTH_SCALING.getValue();
         return available;
     }
 
