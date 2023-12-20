@@ -1,3 +1,8 @@
+Version 2.2.1
+
+Changed tweaks:
+- Enable Strength Scaling no longer prevents pokemon from being under 350 BST if they are forced fully evolved. It is also marked as available in generations 6 and 7.
+
 Version 2.2
 
 Added tweaks:
