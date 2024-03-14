@@ -4389,6 +4389,20 @@ public class Gen4RomHandler extends AbstractDSRomHandler {
             }
         }
 
+        if((settings.getCurrentMiscTweaks() & MiscTweak.STANDARDIZE_STONES.getValue()) > 0){
+            for (Pokemon pkmn : pokes) {
+                if (pkmn != null) {
+                    extraEvolutions.clear();
+                    for (Evolution evo : pkmn.evolutionsFrom) {
+                        if (evo.type == EvolutionType.STONE || evo.type == EvolutionType.LEVEL_ITEM_DAY || evo.type == EvolutionType.LEVEL_ITEM_NIGHT) {
+                            evo.type = EvolutionType.STONE;
+                            evo.extraInfo = Items.moonStone;
+                            addEvoUpdateStone(impossibleEvolutionUpdates, evo, itemNames.get(evo.extraInfo));
+                        }
+                    }
+                }
+            }
+        }
     }
 
     @Override
@@ -4563,10 +4577,10 @@ public class Gen4RomHandler extends AbstractDSRomHandler {
                 offset += 2;
             }
         }
-        for(Integer i : shopItemsMap.keySet()){
-            System.out.println(i);
-            System.out.println(shopItemsMap.get(i).items);
-        }
+//        for(Integer i : shopItemsMap.keySet()){
+//            System.out.println(i);
+//            System.out.println(shopItemsMap.get(i).items);
+//        }
         return shopItemsMap;
     }
 
@@ -5335,6 +5349,7 @@ public class Gen4RomHandler extends AbstractDSRomHandler {
             available |= MiscTweak.BAN_UNOWN_FROM_WILD.getValue();
         }
         available |= MiscTweak.STRENGTH_SCALING.getValue();
+        available |= MiscTweak.STANDARDIZE_STONES.getValue();
 
         return available;
     }

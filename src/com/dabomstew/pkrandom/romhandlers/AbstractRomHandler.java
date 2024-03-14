@@ -5788,7 +5788,6 @@ public abstract class AbstractRomHandler implements RomHandler {
                 }
                 p.evolutionsFrom.addAll(extraEvolutions);
                 for (Evolution ev : extraEvolutions) {
-                    System.out.println(ev);
                     ev.to.evolutionsTo.add(ev);
                 }
             }
@@ -5896,6 +5895,10 @@ public abstract class AbstractRomHandler implements RomHandler {
         populateVanillaEvoInfo();
 
         increaseBaseFriendship(settings);
+
+        if((settings.getCurrentMiscTweaks() & MiscTweak.STANDARDIZE_STONES.getValue()) > 0){
+            moonStoneShop();
+        }
 
         checkPokemonRestrictions();
         List<Pokemon> pokemonPool;
@@ -6350,6 +6353,20 @@ public abstract class AbstractRomHandler implements RomHandler {
             }
         }
 
+        this.setShopItems(currentItems);
+    }
+
+    public void moonStoneShop(){
+        Map<Integer, Shop> currentItems = this.getShopItems();
+        if (currentItems == null) return;
+        for (Shop shop: currentItems.values()) {
+            for (int i = 0; i < shop.items.size(); i++) {
+                if(shop.items.get(i) == Items.mail1){ // Grass Mail
+                    shop.items.remove(i);
+                    shop.items.add(i, Items.moonStone);
+                }
+            }
+        }
         this.setShopItems(currentItems);
     }
 

@@ -1,3 +1,8 @@
+Version 2.3
+
+Added tweaks:
+- Standardize Stones: Makes all pokemon that evolve with any item evolve with a Moon Stone, and adds purchaseable Moon Stones in department stores (replacing Grass Mail). Currently for Gen 4 only. Requires randomized evolutions and Change Impossible Evolutions.
+
 Version 2.2.1
 
 Changed tweaks:

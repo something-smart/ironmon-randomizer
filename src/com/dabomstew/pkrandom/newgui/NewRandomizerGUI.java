@@ -313,6 +313,7 @@ public class NewRandomizerGUI {
     private JCheckBox miscRebalanceEncountersCheckBox;
     private JCheckBox miscRandomizeTypeChartCheckBox;
     private JCheckBox miscStrengthScalingCheckBox;
+    private JCheckBox standardizeStonesCheckBox;
 
     private static JFrame frame;
 
