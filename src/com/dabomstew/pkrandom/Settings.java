@@ -213,7 +213,7 @@ public class Settings {
     private int wildLevelModifier = 0;
     private boolean allowWildAltFormes;
 
-    private Type forcedWildType;
+    private String forcedWildType;
 
     public enum StaticPokemonMod {
         UNCHANGED, RANDOM_MATCHING, COMPLETELY_RANDOM, SIMILAR_STRENGTH
@@ -586,11 +586,14 @@ public class Settings {
         out.write(eliteFourUniquePokemonNumber | ((minimumCatchRateLevel - 1) << 3));
 
         // 51 forced wild type
-        if(forcedWildType == null){
+        if(forcedWildType.equals("None")){
             out.write(255);
         }
+        else if(forcedWildType.equals("Random")){
+            out.write(254);
+        }
         else {
-            out.write(forcedWildType.ordinal());
+            out.write(Type.getTypeWithName(forcedWildType).ordinal());
         }
 
         try {
@@ -889,10 +892,13 @@ public class Settings {
         settings.setMinimumCatchRateLevel(((data[50] & 0x38) >> 3) + 1);
 
         if(data[51] == (byte)255){
-            settings.setForcedWildType(null);
+            settings.setForcedWildType("None");
+        }
+        else if(data[51] == (byte)254){
+            settings.setForcedWildType("Random");
         }
         else {
-            settings.setForcedWildType(Type.values()[data[51]]);
+            settings.setForcedWildType(Type.values()[data[51]].camelCase());
         }
 
         String romName;
@@ -1899,9 +1905,9 @@ public class Settings {
         this.allowWildAltFormes = allowWildAltFormes;
     }
 
-    public Type getForcedWildType() { return forcedWildType; }
+    public String getForcedWildType() { return forcedWildType; }
 
-    public void setForcedWildType(Type t) { this.forcedWildType = t; }
+    public void setForcedWildType(String t) { this.forcedWildType = t; }
 
     public StaticPokemonMod getStaticPokemonMod() {
         return staticPokemonMod;

@@ -63,6 +63,7 @@ public abstract class AbstractRomHandler implements RomHandler {
 
     boolean CHAOS = false;
 
+    String forcedWildType = null;
     private List<Pokemon> vanillaEvolvedPokemon;
     private List<Pokemon> vanillaUnevolvedPokemon;
     private List<Pokemon> vanillaNonBaseLevelEvos;
@@ -823,6 +824,20 @@ public abstract class AbstractRomHandler implements RomHandler {
         return newAbility;
     }
 
+    private Type getForcedWildType(Settings settings){
+        if(forcedWildType == null){
+            forcedWildType = settings.getForcedWildType();
+            if(forcedWildType.equals("Random")) {
+                forcedWildType = Type.values()[this.random.nextInt(18)].name();
+                forcedWildType = forcedWildType.substring(0, 1).toUpperCase() + forcedWildType.substring(1).toLowerCase();
+            }
+        }
+        if(forcedWildType.equals("None")){
+            return null;
+        }
+        return  Type.getTypeWithName(forcedWildType);
+    }
+
     @Override
     public void randomEncounters(Settings settings) {
         boolean useTimeOfDay = settings.isUseTimeBasedEncounters();
@@ -1341,9 +1356,9 @@ public abstract class AbstractRomHandler implements RomHandler {
                         tempBanned.addAll(vanillaNonBaseLevelEvos);
                     }
                 }
-                if(settings.getForcedWildType() != null){
+                if(getForcedWildType(settings) != null){
                     for(Pokemon p : getPokemonInclFormes()){
-                        if(p != null && !(p.primaryType == settings.getForcedWildType()) && !(p.secondaryType == settings.getForcedWildType()) && !banned.contains(p)){
+                        if(p != null && !(p.primaryType == getForcedWildType(settings)) && !(p.secondaryType == getForcedWildType(settings)) && !banned.contains(p)){
                             tempBanned.add(p);
                         }
                     }
@@ -4531,9 +4546,9 @@ public abstract class AbstractRomHandler implements RomHandler {
         if((settings.getCurrentMiscTweaks() & MiscTweak.STRENGTH_SCALING.getValue()) > 0){
             banned.addAll(vanillaNonBaseLevelEvos);
         }
-        if(settings.getForcedWildType() != null){
+        if(getForcedWildType(settings) != null){
             for(Pokemon p : getPokemonInclFormes()){
-                if(p != null && !(p.primaryType == settings.getForcedWildType()) && !(p.secondaryType == settings.getForcedWildType()) && !banned.contains(p)){
+                if(p != null && !(p.primaryType == getForcedWildType(settings)) && !(p.secondaryType == getForcedWildType(settings)) && !banned.contains(p)){
                     banned.add(p);
                 }
             }
@@ -4587,7 +4602,7 @@ public abstract class AbstractRomHandler implements RomHandler {
         }
         if(settings.getForcedWildType() != null){
             for(Pokemon p : getPokemonInclFormes()){
-                if(p != null && !(p.primaryType == settings.getForcedWildType()) && !(p.secondaryType == settings.getForcedWildType()) && !banned.contains(p)){
+                if(p != null && !(p.primaryType == getForcedWildType(settings)) && !(p.secondaryType == getForcedWildType(settings)) && !banned.contains(p)){
                     banned.add(p);
                 }
             }

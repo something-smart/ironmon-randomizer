@@ -29,7 +29,7 @@ import java.util.Map;
 
 public class Version {
     public static final int VERSION = 321; // Increment by 1 for new version. Updated for 4.6.0-dev.
-    public static final String VERSION_STRING = "vR.1.4.5-natdex";
+    public static final String VERSION_STRING = "vR.1.4.6-natdex";
 
     public static final Map<Integer,String> oldVersions = setupVersionsMap();
 

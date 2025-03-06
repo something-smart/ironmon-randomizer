@@ -1625,7 +1625,7 @@ public class NewRandomizerGUI {
         wpPercentageLevelModifierSlider.setValue(settings.getWildLevelModifier());
         wpAllowAltFormesCheckBox.setSelected(settings.isAllowWildAltFormes());
         if(settings.getForcedWildType() != null){
-            wpForceTypeComboBox.setSelectedItem(settings.getForcedWildType().camelCase());
+            wpForceTypeComboBox.setSelectedItem(settings.getForcedWildType());
         }
 
         stpUnchangedRadioButton.setSelected(settings.getStaticPokemonMod() == Settings.StaticPokemonMod.UNCHANGED);
@@ -1849,7 +1849,7 @@ public class NewRandomizerGUI {
         settings.setWildLevelsModified(wpPercentageLevelModifierCheckBox.isSelected());
         settings.setWildLevelModifier(wpPercentageLevelModifierSlider.getValue());
         settings.setAllowWildAltFormes(wpAllowAltFormesCheckBox.isSelected() && wpAllowAltFormesCheckBox.isVisible());
-        settings.setForcedWildType(Type.getTypeWithName((String) wpForceTypeComboBox.getSelectedItem()));
+        settings.setForcedWildType((String) wpForceTypeComboBox.getSelectedItem());
 
         settings.setStaticPokemonMod(stpUnchangedRadioButton.isSelected(), stpSwapLegendariesSwapStandardsRadioButton.isSelected(),
                 stpRandomCompletelyRadioButton.isSelected(), stpRandomSimilarStrengthRadioButton.isSelected());
@@ -3830,11 +3830,12 @@ public class NewRandomizerGUI {
             }
         });
 
-        String[] typeNames = new String[Type.getAllTypes(romHandler.generationOfPokemon()).size() + 1];
+        String[] typeNames = new String[Type.getAllTypes(romHandler.generationOfPokemon()).size() + 2];
         typeNames[0] = "None";
-        for(int i = 1; i < typeNames.length;i++){
+        for(int i = 1; i < typeNames.length - 1;i++){
             typeNames[i] = Type.getAllTypes(romHandler.generationOfPokemon()).get(i-1).camelCase();
         }
+        typeNames[typeNames.length - 1] = "Random";
         wpForceTypeComboBox.setModel(new DefaultComboBoxModel<>(typeNames));
     }
 
