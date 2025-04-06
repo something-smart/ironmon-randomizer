@@ -6161,6 +6161,9 @@ public abstract class AbstractRomHandler implements RomHandler {
                     }
                 }
                 else{
+                    if(p.evolutionsTo.size() == 0 && p.bstForPowerLevels() <= 410){
+                        baseLevelEvo = true;
+                    }
                     vanillaEvolvedPokemon.add(p);
                 }
                 if(!baseLevelEvo || p.bstForPowerLevels() >= 500){
@@ -6263,6 +6266,41 @@ public abstract class AbstractRomHandler implements RomHandler {
             // Shuffle pokemon list so the results aren't overly predictable.
             Collections.shuffle(pokemonPool, this.random);
 
+            int[][] evosToChange = {
+                    {Species.rhyhorn, EvolutionType.LEVEL.ordinal(), 28},
+                    {Species.pichu, EvolutionType.HAPPINESS.ordinal(), 120},
+                    {Species.cleffa, EvolutionType.HAPPINESS.ordinal(), 120},
+                    {Species.igglybuff, EvolutionType.HAPPINESS.ordinal(), 120},
+                    {Species.sunkern, EvolutionType.LEVEL.ordinal(), 18},
+                    {Species.slugma, EvolutionType.LEVEL.ordinal(), 18},
+                    {Species.azurill, EvolutionType.HAPPINESS.ordinal(), 120},
+                    {Species.snover, EvolutionType.LEVEL.ordinal(), 28},
+                    {Species.happiny, EvolutionType.LEVEL.ordinal(), 19},
+                    {Species.tynamo, EvolutionType.LEVEL.ordinal(), 21},
+                    {Species.litwick, EvolutionType.LEVEL.ordinal(), 20},
+                    {Species.mienfoo, EvolutionType.LEVEL.ordinal(), 32},
+                    {Species.pawniard, EvolutionType.LEVEL.ordinal(), 30},
+                    {Species.rufflet, EvolutionType.LEVEL.ordinal(), 40},
+                    {Species.vullaby, EvolutionType.LEVEL.ordinal(), 42},
+                    {Species.deino, EvolutionType.LEVEL.ordinal(), 35},
+                    {Species.zweilous, EvolutionType.LEVEL.ordinal(), 52},
+                    {Species.larvesta, EvolutionType.LEVEL.ordinal(), 40},
+                    {Species.binacle, EvolutionType.LEVEL.ordinal(), 32},
+                    {Species.skrelp, EvolutionType.LEVEL.ordinal(), 34},
+                    {Species.amaura, EvolutionType.LEVEL.ordinal(), 30},
+                    {Species.noibat, EvolutionType.LEVEL.ordinal(), 32},
+                    {Species.cosmog, EvolutionType.LEVEL.ordinal(), 18},
+                    {Species.toxel, EvolutionType.LEVEL.ordinal(), 19},
+                    {Species.snom, EvolutionType.LEVEL.ordinal(), 18},
+                    {Species.dreepy, EvolutionType.LEVEL.ordinal(), 30},
+                    {Species.drakloak, EvolutionType.LEVEL.ordinal(), 52},
+                    {Species.varoom, EvolutionType.LEVEL.ordinal(), 32},
+                    {Species.gimmighoul, EvolutionType.LEVEL.ordinal(), 34},
+                    {Species.gimmighoulR, EvolutionType.LEVEL.ordinal(), 34},
+                    {Species.salandit, EvolutionType.LEVEL.ordinal(), 33},
+                    {Species.combee, EvolutionType.LEVEL.ordinal(), 21}
+            };
+
             for (Pokemon fromPK : pokemonPool) {
                 List<Evolution> oldEvos = originalEvos.get(fromPK);
                 int bstTarget = 0;
@@ -6272,6 +6310,17 @@ public abstract class AbstractRomHandler implements RomHandler {
                     gainedBonusEvolution.add(fromPK);
                 }
                 for (Evolution ev : oldEvos) {
+                    for(int[] entry : evosToChange){
+                        if(entry[0] == fromPK.number){
+                            ev.type = EvolutionType.values()[entry[1]];
+                            if(ev.type == EvolutionType.LEVEL){
+                                ev.extraInfo = entry[2];
+                            }
+                            else if(ev.type == EvolutionType.HAPPINESS){
+                                fromPK.baseFriendship = entry[2];
+                            }
+                        }
+                    }
                     // Pick a Pokemon as replacement
                     replacements.clear();
 

@@ -3290,6 +3290,10 @@ public class Gen3RomHandler extends AbstractGBRomHandler {
                         if (evo.type == EvolutionType.STONE) {
                             stonesTo.add(evo);
                         }
+                        if (evo.type == EvolutionType.STONE_HIGH_PV || evo.type == EvolutionType.STONE_LOW_PV) {
+                            stonesTo.add(evo);
+                            evo.type = EvolutionType.STONE;
+                        }
                         if (evo.type == EvolutionType.STONE_MALE_ONLY || evo.type == EvolutionType.STONE_FEMALE_ONLY){
                             genderSpecificEvoCount++;
                             stonesTo.add(evo);

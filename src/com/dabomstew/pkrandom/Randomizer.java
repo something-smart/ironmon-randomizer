@@ -172,6 +172,11 @@ public class Randomizer {
             pokemonTraitsChanged = true;
         }
 
+        // Trade evolutions removal (moved before evos because this also standardizes stones)
+        if (settings.isChangeImpossibleEvolutions()) {
+            romHandler.removeImpossibleEvolutions(settings);
+        }
+
         // Random Evos
         // Applied after type to pick new evos based on new types.
 
@@ -219,11 +224,6 @@ public class Randomizer {
                 checkValue = addToCV(checkValue, pkmn.hp, pkmn.attack, pkmn.defense, pkmn.speed, pkmn.spatk,
                         pkmn.spdef, pkmn.ability1, pkmn.ability2, pkmn.ability3);
             }
-        }
-
-        // Trade evolutions removal
-        if (settings.isChangeImpossibleEvolutions()) {
-            romHandler.removeImpossibleEvolutions(settings);
         }
 
         // Easier evolutions
